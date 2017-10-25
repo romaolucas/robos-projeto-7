@@ -72,8 +72,9 @@ class Producer extends Thread {
             switch (cmd) {
                 case TRAVEL: 
                     pilot.travel(param);
-                    posX += (int) param*Math.cos(theta);
-                    posY += (int) param*Math.sin(theta);
+                    float radians = (float) (theta * Math.PI / 180f);
+                    posX += (int) param*Math.cos(radians);
+                    posY += (int) param*Math.sin(radians);
                     break;
                 case ROTATE: 
                     pilot.rotate(param);
