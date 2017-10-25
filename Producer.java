@@ -109,7 +109,6 @@ class Producer extends Thread {
             ang = j / 900.0 * 180.0;
             this.buffer.put((int) ang, val);
             readValues.add(val);
-            System.out.println("" + (int) ang + " " + val);
         }
         Motor.C.setSpeed(200);
         Motor.C.rotate(460);
