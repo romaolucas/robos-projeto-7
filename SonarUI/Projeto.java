@@ -13,6 +13,7 @@ public class Projeto
 	private static float robotY;
 
 	private static float sameLineThreshold = 100.0;
+	private static float isObjectThreshold = 248.0;
 
 	private static List<Line> lines = new ArrayList<>();
 
@@ -37,9 +38,6 @@ public class Projeto
 	}
 
 	public static void addLines(Point[] points, int start, int end) {
-		float gX;
-		float gY;
-		
 		if (end - start <= 1) return; 
 
 		Point p1 = points[start];
@@ -48,7 +46,7 @@ public class Projeto
 		float maxDist = 0;
 		
 		for (int i = start + 1; i < end; i++) {
-			float dist = Projeto.distanceFromLine(points[i], line);
+			float dist = distanceFromLine(points[i], line);
 			if (dist > maxDist) {
 				maxDist = dist;
 				maxDistIndex = i;
@@ -90,8 +88,6 @@ public class Projeto
 	}
 
  	public static void main(String[] args) {
-        //abre arquivo
-        List<Point> points = new ArrayList<>();
 		File file = new File("data.txt");
 		BufferedReader reader = null;
 
@@ -115,6 +111,7 @@ public class Projeto
 		    	List<Point> points = new ArrayList<>();
 		    	for (int i = 0; i < scanFloat.size(); i++) {
 		    		float theta = Projeto.degreesToRadians((i + 1) * 2);
+		    		if (scanFloat.get(i) < isObjectThreshold) continue;
 		    		Point point = Projeto.polarToCartesian(scanFloat.get(i), theta);
 		    		point = Projeto.changeBasis(point.getX(), point.getY(), theta);
 		    		points.add(point);
