@@ -43,7 +43,7 @@ class Producer extends Thread {
         sb.append(values);
         String line = sb.toString();
         try {
-            Files.write(Paths.get("values.txt"), line, StandardOperation.APPEND);
+            Files.write(Paths.get("data.txt"), line, StandardOperation.APPEND);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NoSuchElementException e) {
