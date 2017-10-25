@@ -95,6 +95,41 @@ public class Projeto
 
  	public static void main(String[] args) {
         //abre arquivo
+        List<Point> points = new ArrayList<>();
+		File file = new File("data.txt");
+		BufferedReader reader = null;
+
+		try {
+		    reader = new BufferedReader(new FileReader(file));
+		    String text = null;
+		    while ((text = reader.readLine()) != null) {
+		    	List<String> scan = Array.asList(text.split(","));
+		    	List<Float> scanFloat = new ArrayList<>();
+		    	for (int i = 0; i < scan.size(); i++) {
+		    		scanFloat.add(Float.parseFloat(scan.get(i)));
+		    	}
+		    	robotX = scanFloat.get(0);
+		    	robotY = scanFloat.get(1);
+		    	robotTheta = scanFloat.get(2);
+
+		    	scanFloat.remove(0);
+		    	scanFloat.remove(1);
+		    	scanFloat.remove(2);
+
+		    	List<Point> points = new ArrayList<>();
+		    	for (int i = 0; i < scanFloat.size(); i++) {
+		    		float theta = degreesToRadians((i + 1) * 2);
+		    		Point point = polarToCartesian(scanFloat.get(i), theta);
+		    		point = changeBasis(point.getX(), point.getY(), theta);
+		    		points.add(point);
+		    	}
+		    	addLines(points, 0, points.size() - 1);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+		//print out the list
+		System.out.println(list);
         //for linha in linhas do arquivo:
         	//readScan
  			//polarToCartesian
