@@ -128,14 +128,8 @@ public class Projeto
 		} catch (Exception e) {
 		    e.printStackTrace();
 		}
-		//print out the list
-		System.out.println(list);
-        //for linha in linhas do arquivo:
-        	//readScan
- 			//polarToCartesian
- 			//changeBasis
- 			//addLines
- 		//lineMap.createSVGFile("lineMap.svg");
+		// LineMap lineMap = new LineMap(lines, new Rectangle(sei la));
+ 	// 	lineMap.createSVGFile("lineMap.svg");
    
     }
 }
