@@ -4,6 +4,7 @@ import lejos.util.Delay;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.nio.file.*;
 import java.nio.charset.Charset;
 import java.io.IOException;
@@ -35,21 +36,20 @@ class Producer extends Thread {
     }
 
     public void writeValuesToFile(List<Integer> readValues) {
-        String values = readValues.stream().map(Integer::toString)
-            .collect(Collectors.join(", "));
+        String values = readValues.stream().map(i -> i.toString())
+            .collect(Collectors.joining(", "));
         StringBuilder sb = new StringBuilder("");
         sb.append(posX + ", ");
         sb.append(posY + ", ");
+        sb.append(theta + ", ");
         sb.append(values);
+        sb.append("\n");
         String line = sb.toString();
         try {
-            Files.write(Paths.get("data.txt"), line, StandardOperation.APPEND);
+            Files.write(Paths.get("data.txt"), line.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (NoSuchElementException e) {
-            System.out.println("alguma coisa deu errado na hora de abrir o arquivo :(");
-            e.printStackTrace();
-        }
+        } 
     }
 
     public void run() {
