@@ -8,15 +8,15 @@ import lejos.robotics.mapping.LineMap;
 
 public class Projeto
 {
-	private float robotTheta;
-	private float robotX;
-	private float robotY;
+	private static float robotTheta;
+	private static float robotX;
+	private static float robotY;
 
-	private float sameLineThreshold = 100.0;
+	private static float sameLineThreshold = 100.0;
 
-	private List<Line> lines = new ArrayList<>();
+	private static List<Line> lines = new ArrayList<>();
 
-	public Point polarToCartesian(float r, float thetaInRadians) {
+	public static Point polarToCartesian(float r, float thetaInRadians) {
 		float x;
 		float y;
 
@@ -26,7 +26,7 @@ public class Projeto
 		return new Point(x, y);
 	}
 
-	public Point changeBasis(float x, float y, float theta) {
+	public static Point changeBasis(float x, float y, float theta) {
 		float gX;
 		float gY;
 
@@ -36,7 +36,7 @@ public class Projeto
 		return new Point(gX, gY);		 
 	}
 
-	public void addLines(Point[] points, int start, int end) {
+	public static void addLines(Point[] points, int start, int end) {
 		float gX;
 		float gY;
 		
@@ -48,7 +48,7 @@ public class Projeto
 		float maxDist = 0;
 		
 		for (int i = start + 1; i < end; i++) {
-			float dist = distanceFromLine(points[i], line);
+			float dist = Projeto.distanceFromLine(points[i], line);
 			if (dist > maxDist) {
 				maxDist = dist;
 				maxDistIndex = i;
@@ -58,12 +58,12 @@ public class Projeto
 		if (maxDist < sameLineThreshold) {
 			lines.add(line);
 		} else {
-			addLines(points, i, end);
-			addLines(points, start, i);
+			Projeto.addLines(points, i, end);
+			Projeto.addLines(points, start, i);
 		}
 	}
 
-	public float distanceFromLine(Point point, Line line) {
+	public static float distanceFromLine(Point point, Line line) {
 		Point p1 = line.getP1();
 		Point p2 = line.getP2();
 		float x0, x1, x2;
@@ -83,11 +83,7 @@ public class Projeto
 		return dist;
 	}
 
-	public void readScan() {
-		return; 
-	}
-
-	public float degreesToRadians(int degrees) {
+	public static float degreesToRadians(int degrees) {
 		float radians;
 		radians = degrees * Math.PI / 180.0;
 		return radians; 
@@ -118,12 +114,12 @@ public class Projeto
 
 		    	List<Point> points = new ArrayList<>();
 		    	for (int i = 0; i < scanFloat.size(); i++) {
-		    		float theta = degreesToRadians((i + 1) * 2);
-		    		Point point = polarToCartesian(scanFloat.get(i), theta);
-		    		point = changeBasis(point.getX(), point.getY(), theta);
+		    		float theta = Projeto.degreesToRadians((i + 1) * 2);
+		    		Point point = Projeto.polarToCartesian(scanFloat.get(i), theta);
+		    		point = Projeto.changeBasis(point.getX(), point.getY(), theta);
 		    		points.add(point);
 		    	}
-		    	addLines(points, 0, points.size() - 1);
+		    	Projeto.addLines(points, 0, points.size() - 1);
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
