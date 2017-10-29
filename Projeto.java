@@ -5,10 +5,19 @@ import java.util.Arrays;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.File;
-import lejos.geom.Line;
-import lejos.geom.Rectangle;
-import lejos.geom.Point;
-import lejos.robotics.mapping.LineMap;
+import java.awt.geom.*;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import javax.swing.JOptionPane;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+
+// import lejos.geom.Line;
+// import lejos.geom.Rectangle;
+// import lejos.geom.Point;
+// import lejos.robotics.mapping.LineMap;
 
 public class Projeto
 {
@@ -19,34 +28,37 @@ public class Projeto
 	private static float sameLineThreshold = 100f;
 	private static float isObjectThreshold = 248f;
 
-	private static List<Line> lines = new ArrayList<>();
+	private static List<Line2D> lines = new ArrayList<>();
 
-	public static Point polarToCartesian(float r, float thetaInRadians) {
+	public static Point2D polarToCartesian(float r, float thetaInRadians) {
 		float x;
 		float y;
 
 		x = (float) (r * Math.cos(thetaInRadians));
 		y = (float) (r * Math.sin(thetaInRadians));
 
-		return new Point(x, y);
+		if (y < -1) System.out.println(x + " e " + y);
+		return new Point2D.Float(x, y);
 	}
 
-	public static Point changeBasis(float x, float y, float theta) {
+	public static Point2D changeBasis(float x, float y, float theta) {
 		float gX;
 		float gY;
 
 		gX = (float) ((x * Math.cos(theta))  - (y * Math.sin(theta)) + robotX);
 		gY = (float) ((x * Math.sin(theta)) + (y * Math.cos(theta)) + robotY);
 		
-		return new Point(gX, gY);		 
+
+		// if (gY < 0) System.out.println(gX + " e " + gY);
+		return new Point2D.Float(gX, gY);		 
 	}
 
-	public static void addLines(Point[] points, int start, int end) {
+	public static void addLines(Point2D[] points, int start, int end) {
 		if (end - start <= 1) return; 
 
-		Point p1 = points[start];
-		Point pn = points[end];	
-		Line line = new Line((float) p1.getX(), (float) p1.getY(), (float) pn.getX(), (float) pn.getY());
+		Point2D p1 = points[start];
+		Point2D pn = points[end];	
+		Line2D line = new Line2D.Float((float) p1.getX(), (float) p1.getY(), (float) pn.getX(), (float) pn.getY());
 		float maxDist = 0f;
 		int maxDistIndex = 0;
 		
@@ -60,15 +72,19 @@ public class Projeto
 
 		if (maxDist < sameLineThreshold) {
 			lines.add(line);
+			StdDraw.setPenRadius(0.01);
+            StdDraw.setPenColor(StdDraw.BLACK);
+            StdDraw.line(line.getP1().getX(), line.getP1().getY(), line.getP2().getX(), line.getP2().getY());        
+			// System.out.println("linha: " + line.getP1().toString() + " e " + line.getP2().toString());
 		} else {
 			Projeto.addLines(points, maxDistIndex, end);
 			Projeto.addLines(points, start, maxDistIndex);
 		}
 	}
 
-	public static float distanceFromLine(Point point, Line line) {
-		Point p1 = line.getP1();
-		Point p2 = line.getP2();
+	public static float distanceFromLine(Point2D point, Line2D line) {
+		Point2D p1 = line.getP1();
+		Point2D p2 = line.getP2();
 		float x0, x1, x2;
 		float y0, y1, y2;
 
@@ -95,6 +111,7 @@ public class Projeto
  	public static void main(String[] args) {
 		File file = new File("data.txt");
 		BufferedReader reader = null;
+		StdDraw.setScale(-800, 800);
 
 		try {
 		    reader = new BufferedReader(new FileReader(file));
@@ -113,24 +130,18 @@ public class Projeto
 		    	scanFloat.remove(1);
 		    	scanFloat.remove(2);
 
-		    	List<Point> points = new ArrayList<>();
+		    	List<Point2D> points = new ArrayList<>();
 		    	for (int i = 0; i < scanFloat.size(); i++) {
-		    		float theta = Projeto.degreesToRadians((i + 1) * 2);
+		    		float theta = Projeto.degreesToRadians(i * 2);
 		    		if (scanFloat.get(i) < isObjectThreshold) continue;
-		    		Point point = Projeto.polarToCartesian(scanFloat.get(i), theta);
+		    		Point2D point = Projeto.polarToCartesian(scanFloat.get(i), theta);
 		    		point = Projeto.changeBasis((float) point.getX(), (float) point.getY(), theta);
 		    		points.add(point);
 		    	}
-		    	Projeto.addLines(points.toArray(new Point[points.size()]), 0, points.size() - 1);
+		    	Projeto.addLines(points.toArray(new Point2D[points.size()]), 0, points.size() - 1);
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
-		}
-		LineMap lineMap = new LineMap(lines.toArray(new Line[lines.size()]), new Rectangle(0, 0, 4000, 4000));
- 		try {
- 			lineMap.createSVGFile("lineMap.svg");
- 		} catch (Exception e) {
- 			e.printStackTrace();
- 		}
+		}		
     }
 }
