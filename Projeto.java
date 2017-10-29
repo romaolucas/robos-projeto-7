@@ -21,19 +21,19 @@ import javax.swing.SwingUtilities;
 
 public class Projeto
 {
-	private static float robotTheta;
-	private static float robotX;
-	private static float robotY;
+	public static float robotTheta;
+	public static float robotX;
+	public static float robotY;
 
-	private static float sameLineThreshold = 100f;
-	private static float isObjectThreshold = 248f;
+	public static float sameLineThreshold = 100f;
+	public static float isObjectThreshold = 248f;
 
 	private static List<Line2D> lines = new ArrayList<>();
 
 	public static Point2D polarToCartesian(float r, float thetaInRadians) {
 		float x;
 		float y;
-
+        System.out.println("convertendo " + r + " com theta " + thetaInRadians + " para cartesiano");
 		x = (float) (r * Math.cos(thetaInRadians));
 		y = (float) (r * Math.sin(thetaInRadians));
 
@@ -49,7 +49,7 @@ public class Projeto
 		gY = (float) ((x * Math.sin(theta)) + (y * Math.cos(theta)) + robotY);
 		
 
-		// if (gY < 0) System.out.println(gX + " e " + gY);
+		if (gY < 0) System.out.println(gX + " e " + gY);
 		return new Point2D.Float(gX, gY);		 
 	}
 
@@ -122,7 +122,8 @@ public class Projeto
 		    	for (int i = 0; i < scan.size(); i++) {
 		    		scanFloat.add(Float.parseFloat(scan.get(i)));
 		    	}
-		    	robotX = scanFloat.get(0);
+		    	
+                robotX = scanFloat.get(0);
 		    	robotY = scanFloat.get(1);
 		    	robotTheta = scanFloat.get(2);
 
@@ -135,7 +136,8 @@ public class Projeto
 		    		float theta = Projeto.degreesToRadians(i * 2);
 		    		if (scanFloat.get(i) > isObjectThreshold) continue;
 		    		Point2D point = Projeto.polarToCartesian(scanFloat.get(i), theta);
-		    		point = Projeto.changeBasis((float) point.getX(), (float) point.getY(), theta);
+                    System.out.println("ponto novo  "  + point);
+		    		//point = Projeto.changeBasis((float) point.getX(), (float) point.getY(), theta);
 		    		points.add(point);
 		    	}
 		    	Projeto.addLines(points.toArray(new Point2D[points.size()]), 0, points.size() - 1);
