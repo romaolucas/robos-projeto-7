@@ -75,7 +75,7 @@ public class Projeto
 			StdDraw.setPenRadius(0.01);
             StdDraw.setPenColor(StdDraw.BLACK);
             StdDraw.line(line.getP1().getX(), line.getP1().getY(), line.getP2().getX(), line.getP2().getY());        
-			// System.out.println("linha: " + line.getP1().toString() + " e " + line.getP2().toString());
+			System.out.println("linha: " + line.getP1().toString() + " e " + line.getP2().toString());
 		} else {
 			Projeto.addLines(points, maxDistIndex, end);
 			Projeto.addLines(points, start, maxDistIndex);
@@ -133,7 +133,7 @@ public class Projeto
 		    	List<Point2D> points = new ArrayList<>();
 		    	for (int i = 0; i < scanFloat.size(); i++) {
 		    		float theta = Projeto.degreesToRadians(i * 2);
-		    		if (scanFloat.get(i) < isObjectThreshold) continue;
+		    		if (scanFloat.get(i) > isObjectThreshold) continue;
 		    		Point2D point = Projeto.polarToCartesian(scanFloat.get(i), theta);
 		    		point = Projeto.changeBasis((float) point.getX(), (float) point.getY(), theta);
 		    		points.add(point);
