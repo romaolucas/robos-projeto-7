@@ -1,7 +1,5 @@
 import java.lang.Math;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.File;
@@ -33,23 +31,19 @@ public class Projeto
 	public static Point2D polarToCartesian(float r, float thetaInRadians) {
 		float x;
 		float y;
-        System.out.println("convertendo " + r + " com theta " + thetaInRadians + " para cartesiano");
 		x = (float) (r * Math.cos(thetaInRadians));
 		y = (float) (r * Math.sin(thetaInRadians));
 
-		if (y < -1) System.out.println(x + " e " + y);
 		return new Point2D.Float(x, y);
 	}
 
-	public static Point2D changeBasis(float x, float y, float theta) {
+	public static Point2D changeBasis(float x, float y) {
 		float gX;
 		float gY;
-
+        float theta = degreesToRadians(robotTheta);
 		gX = (float) ((x * Math.cos(theta))  - (y * Math.sin(theta)) + robotX);
 		gY = (float) ((x * Math.sin(theta)) + (y * Math.cos(theta)) + robotY);
-		
 
-		if (gY < 0) System.out.println(gX + " e " + gY);
 		return new Point2D.Float(gX, gY);		 
 	}
 
@@ -77,7 +71,7 @@ public class Projeto
             StdDraw.line(line.getP1().getX(), line.getP1().getY(), line.getP2().getX(), line.getP2().getY());        
 			System.out.println("linha: " + line.getP1().toString() + " e " + line.getP2().toString());
 		} else {
-			Projeto.addLines(points, maxDistIndex, end);
+			Projeto.addLines(points, maxDistIndex + 1, end);
 			Projeto.addLines(points, start, maxDistIndex);
 		}
 	}
@@ -102,7 +96,7 @@ public class Projeto
 		return dist;
 	}
 
-	public static float degreesToRadians(int degrees) {
+	public static float degreesToRadians(float degrees) {
 		float radians;
 		radians = (float) (degrees * Math.PI / 180f);
 		return radians; 
@@ -136,11 +130,22 @@ public class Projeto
 		    		float theta = Projeto.degreesToRadians(i * 2);
 		    		if (scanFloat.get(i) > isObjectThreshold) continue;
 		    		Point2D point = Projeto.polarToCartesian(scanFloat.get(i), theta);
-                    System.out.println("ponto novo  "  + point);
-		    		//point = Projeto.changeBasis((float) point.getX(), (float) point.getY(), theta);
+		    		point = Projeto.changeBasis((float) point.getX(), (float) point.getY());
 		    		points.add(point);
 		    	}
-		    	Projeto.addLines(points.toArray(new Point2D[points.size()]), 0, points.size() - 1);
+		    	Collections.sort(points, new Comparator<Point2D>() {
+                    @Override
+                    public int compare(Point2D a, Point2D b) {
+                        double normA = a.getX()*a.getX() + a.getY()*a.getY();
+                        double normB = b.getX()*b.getX() + b.getY()*b.getY();
+                        if (normA > normB)
+                            return 1;
+                        if (normA < normB)
+                            return -1;
+                        return 0;
+                    }
+                });
+                Projeto.addLines(points.toArray(new Point2D[points.size()]), 0, points.size() - 1);
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
